@@ -2,28 +2,23 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>洪水シナリオアシスタント – モックUI</title>
+  <title>流域治水シナリオ AI – 利用者／管理者モック</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
       --bg: #050816;
-      --bg-alt: #0b1020;
       --card: #111827;
       --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.06);
-      --accent-border: rgba(56, 189, 248, 0.35);
+      --accent-soft: rgba(56, 189, 248, 0.08);
+      --accent-border: rgba(56, 189, 248, 0.45);
       --text: #e5e7eb;
       --text-soft: #9ca3af;
-      --danger: #fb7185;
       --radius-xl: 18px;
       --radius-2xl: 26px;
-      --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.40);
-      --transition-fast: 0.18s ease-out;
+      --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.4);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -34,22 +29,6 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-    }
-
-    /* Layout */
-    .app-shell {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
-      gap: 1.5rem;
-      padding: 1.25rem 1.75rem 1.5rem;
-    }
-
-    @media (max-width: 900px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-        padding: 0.75rem;
-      }
     }
 
     /* Top bar */
@@ -64,810 +43,517 @@
         rgba(56, 189, 248, 0.08),
         rgba(15, 23, 42, 0.96));
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
+    .brand { display: flex; align-items: center; gap: 0.6rem; }
     .brand-logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background: conic-gradient(from 160deg, #38bdf8, #22c55e, #6366f1, #38bdf8);
-      position: relative;
-      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.85);
+      width: 32px; height: 32px; border-radius: 999px;
+      background: conic-gradient(from 160deg,#38bdf8,#22c55e,#6366f1,#38bdf8);
+      position: relative; box-shadow: 0 0 0 2px rgba(15,23,42,0.85);
     }
-
     .brand-logo::after {
-      content: "";
-      position: absolute;
-      inset: 5px;
-      border-radius: inherit;
-      background: radial-gradient(circle at 30% 25%, #f9fafb, #0f172a);
-      mix-blend-mode: screen;
-      opacity: 0.4;
+      content:""; position:absolute; inset:5px; border-radius:inherit;
+      background: radial-gradient(circle at 30% 25%,#f9fafb,#0f172a);
+      mix-blend-mode: screen; opacity:0.4;
     }
-
-    .brand-title {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-
+    .brand-title { display:flex; flex-direction:column; line-height:1.2; }
     .brand-title span:first-child {
-      font-size: 0.9rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 600;
+      font-size:0.9rem; letter-spacing:0.08em; text-transform:uppercase;
+      color:var(--accent); font-weight:600;
     }
-
     .brand-title span:last-child {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #f9fafb;
+      font-size:1rem; font-weight:600; color:#f9fafb;
     }
+    .topbar-right { display:flex; align-items:center; gap:0.8rem; }
 
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 0.8rem;
-      color: var(--text-soft);
+    /* Role toggle */
+    .role-toggle {
+      display:inline-flex; padding:0.15rem; border-radius:999px;
+      background:rgba(15,23,42,0.9); border:1px solid rgba(148,163,184,0.5);
+    }
+    .role-btn {
+      border:none; background:transparent; color:var(--text-soft);
+      padding:0.25rem 0.9rem; border-radius:999px;
+      font-size:0.8rem; cursor:pointer;
+    }
+    .role-btn.active {
+      background:var(--accent); color:#020617;
+      box-shadow:0 10px 22px rgba(56,189,248,0.5);
     }
 
     .badge {
-      padding: 0.15rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      background: rgba(15, 23, 42, 0.85);
+      padding:0.18rem 0.6rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      font-size:0.78rem; color:var(--text-soft);
+      background:rgba(15,23,42,0.9);
+    }
+
+    /* Layout */
+    .app-shell {
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      gap:1.5rem;
+      padding:1.25rem 1.75rem 1.5rem;
+    }
+    @media (max-width:900px){
+      .app-shell{ grid-template-columns:1fr; padding:0.75rem; }
     }
 
     /* Sidebar */
     .sidebar {
-      border-radius: var(--radius-2xl);
-      background: linear-gradient(145deg, #020617, #020617 52%, #020617);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      box-shadow: var(--shadow-soft);
-      padding: 1.1rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      position: relative;
-      overflow: hidden;
+      border-radius:var(--radius-2xl);
+      background:linear-gradient(145deg,#020617,#020617 52%,#020617);
+      border:1px solid rgba(148,163,184,0.32);
+      box-shadow:var(--shadow-soft);
+      padding:1.1rem 1rem;
+      display:flex; flex-direction:column; gap:1rem;
+      position:relative; overflow:hidden;
     }
-
-    .sidebar::before {
-      content: "";
-      position: absolute;
-      inset: -120px;
+    .sidebar::before{
+      content:"";position:absolute;inset:-120px;
       background: radial-gradient(circle at top,
-        rgba(56, 189, 248, 0.1),
-        transparent 52%);
-      opacity: 0.9;
-      pointer-events: none;
+        rgba(56,189,248,0.13),transparent 52%);
+      pointer-events:none;
     }
-
-    .sidebar-header {
-      position: relative;
-      z-index: 1;
+    .sidebar-header{ position:relative; z-index:1; }
+    .sidebar-header h2{ margin:0; font-size:0.95rem; }
+    .sidebar-header p{
+      margin:0.25rem 0 0; font-size:0.78rem; color:var(--text-soft);
     }
-
-    .sidebar-header h2 {
-      margin: 0;
-      font-size: 0.95rem;
-      color: #e5e7eb;
+    .step-list{
+      position:relative; z-index:1;
+      list-style:none; padding:0; margin:0.7rem 0 0;
+      display:flex; flex-direction:column; gap:0.25rem;
     }
-
-    .sidebar-header p {
-      margin: 0.2rem 0 0;
-      font-size: 0.78rem;
-      color: var(--text-soft);
+    .step-item{
+      display:flex; align-items:center; gap:0.55rem;
+      padding:0.35rem 0.45rem; border-radius:999px;
+      cursor:pointer; border:1px solid transparent;
+      color:var(--text-soft); font-size:0.78rem;
+      transition:0.18s ease-out;
     }
-
-    .step-list {
-      list-style: none;
-      margin: 0.6rem 0 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      position: relative;
-      z-index: 1;
+    .step-item:hover{
+      background:rgba(31,41,55,0.9);
+      border-color:rgba(148,163,184,0.6);
     }
-
-    .step-item {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.35rem 0.45rem;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: background var(--transition-fast),
-        border-color var(--transition-fast),
-        transform 0.09s ease-out;
-      border: 1px solid transparent;
-      color: var(--text-soft);
-      font-size: 0.78rem;
+    .step-item.active{
+      background:var(--accent-soft);
+      border-color:var(--accent-border);
+      color:#e5f4ff;
+      box-shadow:0 0 0 1px rgba(2,6,23,0.9),
+                 0 0 20px rgba(56,189,248,0.38);
     }
-
-    .step-item:hover {
-      background: rgba(31, 41, 55, 0.9);
-      border-color: rgba(148, 163, 184, 0.6);
-      transform: translateY(-1px);
+    .step-index{
+      width:20px;height:20px;border-radius:999px;
+      border:1px solid rgba(148,163,184,0.7);
+      display:inline-flex;align-items:center;justify-content:center;
+      font-size:0.7rem;background:rgba(15,23,42,0.95);color:#cbd5f5;
     }
-
-    .step-item.active {
-      background: var(--accent-soft);
-      border-color: var(--accent-border);
-      color: #e5f4ff;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9), 0 0 20px rgba(56, 189, 248, 0.35);
+    .step-item.active .step-index{
+      background:var(--accent); color:#020617; border-color:transparent;
     }
-
-    .step-index {
-      width: 20px;
-      height: 20px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      background: rgba(15, 23, 42, 0.9);
-      color: #cbd5f5;
-    }
-
-    .step-item.active .step-index {
-      background: var(--accent);
-      color: #0b1120;
-      border-color: transparent;
-    }
-
-    .step-title {
-      font-weight: 500;
-    }
-
-    .step-caption {
-      font-size: 0.72rem;
-      opacity: 0.8;
-    }
-
-    .sidebar-footer {
-      font-size: 0.7rem;
-      color: var(--text-soft);
-      margin-top: 0.8rem;
-      padding: 0.6rem 0.5rem;
-      border-radius: 0.9rem;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px dashed rgba(148, 163, 184, 0.4);
-      position: relative;
-      z-index: 1;
+    .step-title{ font-weight:500; }
+    .step-caption{ font-size:0.72rem; opacity:0.9; }
+    .sidebar-footer{
+      position:relative; z-index:1;
+      font-size:0.7rem; color:var(--text-soft);
+      margin-top:0.85rem;padding:0.6rem 0.55rem;
+      border-radius:0.9rem;
+      background:rgba(15,23,42,0.95);
+      border:1px dashed rgba(148,163,184,0.45);
     }
 
     /* Main */
-    .main {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-      min-width: 0;
+    .main{ display:flex; flex-direction:column; gap:0.9rem; min-width:0; }
+    .main-header{
+      display:flex; flex-wrap:wrap; gap:0.8rem;
+      justify-content:space-between; align-items:center;
+    }
+    .main-header-left h1{
+      margin:0; font-size:1.3rem; letter-spacing:0.03em;
+    }
+    .main-header-left p{
+      margin:0.25rem 0 0; font-size:0.8rem; color:var(--text-soft);
+    }
+    .chip-row{ display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.4rem; }
+    .chip{
+      font-size:0.7rem; padding:0.14rem 0.5rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:rgba(15,23,42,0.9);
     }
 
-    .main-header {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      justify-content: space-between;
-      align-items: center;
+    .btn{
+      border-radius:999px;border:none;cursor:pointer;
+      padding:0.42rem 0.9rem;
+      font-size:0.78rem;font-weight:500;
+      display:inline-flex;align-items:center;gap:0.35rem;
+      background:var(--accent);color:#020617;
+      box-shadow:0 14px 30px rgba(56,189,248,0.45);
+      transition:0.1s ease-out;
+    }
+    .btn.secondary{
+      background:rgba(15,23,42,0.95);
+      color:var(--text-soft);
+      border:1px solid rgba(148,163,184,0.6);
+      box-shadow:none;
+    }
+    .btn:hover{ transform:translateY(-1px); }
+    .btn.secondary:hover{
+      box-shadow:0 12px 26px rgba(15,23,42,0.7);
     }
 
-    .main-header-left h1 {
-      margin: 0;
-      font-size: 1.32rem;
-      letter-spacing: 0.03em;
+    .panel-container{
+      flex:1; border-radius:var(--radius-2xl);
+      background:radial-gradient(circle at top left,
+          rgba(56,189,248,0.08),transparent 60%),
+        linear-gradient(135deg,#020617,#020617 60%,#020617);
+      border:1px solid rgba(148,163,184,0.34);
+      box-shadow:var(--shadow-soft);
+      padding:1rem;
+      display:flex; flex-direction:column; gap:0.8rem;
+      min-height:0;
+    }
+    .panel-header{
+      display:flex; justify-content:space-between;
+      align-items:baseline; gap:0.5rem; flex-wrap:wrap;
+    }
+    .panel-header h2{ margin:0; font-size:0.98rem; }
+    .panel-header p{ margin:0; font-size:0.78rem; color:var(--text-soft); }
+
+    .panel{
+      display:none; gap:0.85rem; flex:1; min-height:0;
+    }
+    .panel.active{ display:grid; }
+    .two-col{ grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr); }
+    .single-col{ grid-template-columns:minmax(0,1fr); }
+    @media (max-width:960px){
+      .two-col{ grid-template-columns:1fr; }
     }
 
-    .main-header-left p {
-      margin: 0.25rem 0 0;
-      font-size: 0.8rem;
-      color: var(--text-soft);
+    .card{
+      border-radius:var(--radius-xl);
+      background:rgba(15,23,42,0.96);
+      border:1px solid rgba(148,163,184,0.35);
+      padding:0.8rem 0.9rem;
+      display:flex; flex-direction:column; gap:0.55rem;
+      min-width:0;
+    }
+    .card-header{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:0.4rem;
+    }
+    .card-header h3{ margin:0; font-size:0.9rem; }
+    .card-header span{ font-size:0.7rem; color:var(--text-soft); }
+    .card-body{ font-size:0.8rem; color:var(--text-soft); }
+
+    .upload-drop{
+      border-radius:1rem;
+      border:1px dashed rgba(148,163,184,0.7);
+      background:radial-gradient(circle at top,
+        rgba(148,163,184,0.12),transparent 50%);
+      padding:1rem; text-align:center;
+      display:flex; flex-direction:column; gap:0.35rem;
+    }
+    .file-list{
+      margin-top:0.55rem;
+      border-radius:0.8rem;
+      background:rgba(15,23,42,0.95);
+      border:1px solid rgba(148,163,184,0.45);
+      padding:0.4rem 0.55rem;
+      max-height:170px; overflow:auto;
+      font-size:0.76rem;
+    }
+    .file-row{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0.25rem 0.1rem;
+      border-bottom:1px solid rgba(31,41,55,0.95);
+    }
+    .file-row:last-child{ border-bottom:none; }
+    .file-name{ color:#e5e7eb; }
+    .file-meta{ font-size:0.72rem; color:var(--text-soft); }
+
+    .status-pill{
+      display:inline-flex;align-items:center;gap:0.4rem;
+      padding:0.1rem 0.55rem;border-radius:999px;
+      background:rgba(15,23,42,0.95);
+      border:1px solid rgba(148,163,184,0.6);
+      font-size:0.7rem;
+    }
+    .status-dot{
+      width:7px;height:7px;border-radius:999px;
+      background:#22c55e;
+      box-shadow:0 0 0 3px rgba(34,197,94,0.4);
+    }
+    .progress-bar{
+      width:100%;height:6px;border-radius:999px;
+      background:rgba(30,64,175,0.7);overflow:hidden;margin-top:0.45rem;
+    }
+    .progress-bar-inner{
+      height:100%;border-radius:inherit;
+      background:linear-gradient(90deg,#38bdf8,#22c55e);
+      width:72%;box-shadow:0 0 12px rgba(56,189,248,0.7);
     }
 
-    .chip-row {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
+    .log{
+      margin-top:0.55rem;
+      font-family:ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono","Courier New",monospace;
+      background:rgba(15,23,42,0.96);
+      border-radius:0.8rem;
+      padding:0.5rem 0.6rem;
+      border:1px solid rgba(30,64,175,0.95);
+      max-height:180px; overflow:auto;
+      font-size:0.72rem;
+    }
+    .log-line{ display:flex; gap:0.4rem; margin-bottom:0.18rem; white-space:nowrap; }
+    .log-time{ color:#64748b; }
+    .log-msg{ color:#e5e7eb; }
+
+    .pill-row{ display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.25rem; }
+    .pill{
+      font-size:0.7rem; padding:0.12rem 0.4rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.65);
+      background:rgba(15,23,42,0.96);
     }
 
-    .chip {
-      font-size: 0.7rem;
-      padding: 0.16rem 0.5rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.8);
+    .chat-window{
+      border-radius:1rem;
+      padding:0.55rem 0.7rem;
+      background:radial-gradient(circle at top,
+          rgba(59,130,246,0.12),transparent 55%),
+        rgba(15,23,42,0.98);
+      border:1px solid rgba(59,130,246,0.75);
+      max-height:260px; overflow:auto;
+      display:flex; flex-direction:column; gap:0.4rem;
+    }
+    .chat-message{
+      max-width:82%; padding:0.32rem 0.5rem;
+      border-radius:0.8rem; font-size:0.78rem; line-height:1.35;
+    }
+    .chat-message.user{
+      margin-left:auto;
+      background:rgba(56,189,248,0.24);
+      border-bottom-right-radius:0.1rem;
+    }
+    .chat-message.ai{
+      margin-right:auto;
+      background:rgba(15,23,42,1);
+      border:1px solid rgba(148,163,184,0.45);
+      border-bottom-left-radius:0.1rem;
+    }
+    .chat-meta{
+      font-size:0.67rem;color:var(--text-soft);margin-top:0.06rem;
+    }
+    .chat-input-row{
+      display:flex; gap:0.4rem; margin-top:0.4rem;
+    }
+    .chat-input{
+      flex:1; border-radius:999px;
+      border:1px solid rgba(148,163,184,0.65);
+      padding:0.4rem 0.75rem;
+      font-size:0.78rem;
+      background:rgba(15,23,42,0.96); color:var(--text);
+      outline:none;
+    }
+    .chat-input::placeholder{ color:rgba(148,163,184,0.75); }
+
+    .doc-preview{
+      border-radius:1rem;
+      border:1px solid rgba(148,163,184,0.65);
+      background:linear-gradient(135deg,#020617,#020617 62%,#020617);
+      padding:0.6rem 0.7rem;
+      max-height:260px; overflow:auto;
+      font-size:0.78rem;
+    }
+    .doc-header{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:0.4rem;
+    }
+    .doc-title{ font-weight:600; font-size:0.86rem; }
+    .doc-tag{
+      font-size:0.7rem; padding:0.1rem 0.45rem;
+      border-radius:999px;
+      background:rgba(22,163,74,0.12);
+      color:#a7f3d0;
+      border:1px solid rgba(22,163,74,0.7);
+    }
+    .doc-section{ margin-bottom:0.5rem; }
+    .doc-section-title{ font-weight:600; margin-bottom:0.12rem; color:#e5e7eb; }
+    .doc-section-body{ color:var(--text-soft); }
+
+    .footer-bar{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-top:0.45rem; font-size:0.75rem; color:var(--text-soft);
+      gap:0.6rem; flex-wrap:wrap;
     }
 
-    .main-header-right {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
+    textarea{
+      width:100%; height:130px; resize:none;
+      background:#020617; color:#e5e7eb;
+      border-radius:0.8rem;
+      border:1px solid rgba(148,163,184,0.7);
+      padding:0.4rem 0.5rem; font-size:0.78rem;
     }
 
-    .btn {
-      border-radius: 999px;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      font-size: 0.78rem;
-      font-weight: 500;
-      padding: 0.45rem 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: var(--accent);
-      color: #020617;
-      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.45);
-      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out,
-        background 0.12s ease-out;
-    }
-
-    .btn span {
-      font-size: 0.9rem;
-    }
-
-    .btn.secondary {
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text-soft);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: none;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(56, 189, 248, 0.55);
-    }
-
-    .btn.secondary:hover {
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
-    }
-
-    /* Panels container */
-    .panel-container {
-      flex: 1;
-      border-radius: var(--radius-2xl);
-      background: radial-gradient(circle at top left,
-          rgba(56, 189, 248, 0.08),
-          transparent 60%),
-        linear-gradient(135deg, #020617, #020617 60%, #020617);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      box-shadow: var(--shadow-soft);
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      min-height: 0;
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .panel-header h2 {
-      margin: 0;
-      font-size: 0.98rem;
-    }
-
-    .panel-header p {
-      margin: 0;
-      font-size: 0.78rem;
-      color: var(--text-soft);
-    }
-
-    .panel {
-      display: none;
-      gap: 0.8rem;
-      min-height: 0;
-      flex: 1;
-    }
-
-    .panel.active {
-      display: grid;
-    }
-
-    /* Layout variants per panel */
-    .panel.two-column {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    }
-
-    .panel.single-column {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    @media (max-width: 960px) {
-      .panel.two-column {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      border-radius: var(--radius-xl);
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      padding: 0.8rem 0.9rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-      min-width: 0;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .card-header h3 {
-      margin: 0;
-      font-size: 0.9rem;
-    }
-
-    .card-header span {
-      font-size: 0.7rem;
-      color: var(--text-soft);
-    }
-
-    .card-body {
-      font-size: 0.8rem;
-      color: var(--text-soft);
-    }
-
-    /* Upload panel */
-    .upload-drop {
-      border-radius: 1rem;
-      border: 1px dashed rgba(148, 163, 184, 0.7);
-      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.12), transparent 50%);
-      padding: 1rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    .upload-drop strong {
-      color: #e5e7eb;
-      font-size: 0.86rem;
-    }
-
-    .upload-drop small {
-      color: var(--text-soft);
-      font-size: 0.72rem;
-    }
-
-    .file-list {
-      margin-top: 0.55rem;
-      border-radius: 0.8rem;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      padding: 0.4rem 0.55rem;
-      max-height: 175px;
-      overflow: auto;
-      font-size: 0.76rem;
-    }
-
-    .file-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.25rem 0.1rem;
-      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
-    }
-
-    .file-row:last-child {
-      border-bottom: none;
-    }
-
-    .file-name {
-      color: #e5e7eb;
-    }
-
-    .file-meta {
-      font-size: 0.72rem;
-      color: var(--text-soft);
-    }
-
-    /* Index panel */
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.1rem 0.5rem;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4);
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(30, 64, 175, 0.7);
-      overflow: hidden;
-      margin-top: 0.45rem;
-      position: relative;
-    }
-
-    .progress-bar-inner {
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #38bdf8, #22c55e);
-      width: 68%;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
-    }
-
-    .log {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", "Courier New", monospace;
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: 0.8rem;
-      padding: 0.5rem 0.6rem;
-      max-height: 180px;
-      overflow: auto;
-      font-size: 0.72rem;
-      border: 1px solid rgba(30, 64, 175, 0.9);
-    }
-
-    .log-line {
-      display: flex;
-      gap: 0.4rem;
-      margin-bottom: 0.18rem;
-      white-space: nowrap;
-    }
-
-    .log-time {
-      color: #64748b;
-    }
-
-    .log-msg {
-      color: #e5e7eb;
-    }
-
-    /* Chat & document builder */
-    .chat-window {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      border-radius: 1rem;
-      padding: 0.55rem 0.7rem;
-      background: radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 55%),
-        rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(59, 130, 246, 0.75);
-      max-height: 270px;
-      overflow: auto;
-    }
-
-    .chat-message {
-      max-width: 82%;
-      padding: 0.32rem 0.5rem;
-      border-radius: 0.8rem;
-      font-size: 0.78rem;
-      line-height: 1.35;
-    }
-
-    .chat-message.user {
-      margin-left: auto;
-      background: rgba(56, 189, 248, 0.24);
-      border-bottom-right-radius: 0.1rem;
-    }
-
-    .chat-message.ai {
-      margin-right: auto;
-      background: rgba(15, 23, 42, 1);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      border-bottom-left-radius: 0.1rem;
-    }
-
-    .chat-meta {
-      font-size: 0.67rem;
-      color: var(--text-soft);
-      margin-top: 0.06rem;
-    }
-
-    .chat-input-row {
-      display: flex;
-      gap: 0.4rem;
-      margin-top: 0.4rem;
-    }
-
-    .chat-input {
-      flex: 1;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 0.4rem 0.75rem;
-      font-size: 0.78rem;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text);
-      outline: none;
-    }
-
-    .chat-input::placeholder {
-      color: rgba(148, 163, 184, 0.7);
-    }
-
-    .doc-preview {
-      border-radius: 1rem;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: linear-gradient(135deg, #020617, #020617 62%, #020617);
-      padding: 0.55rem 0.7rem;
-      max-height: 270px;
-      overflow: auto;
-      font-size: 0.78rem;
-    }
-
-    .doc-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.4rem;
-    }
-
-    .doc-title {
-      font-weight: 600;
-      font-size: 0.86rem;
-    }
-
-    .doc-tag {
-      font-size: 0.7rem;
-      padding: 0.1rem 0.45rem;
-      border-radius: 999px;
-      background: rgba(22, 163, 74, 0.12);
-      color: #a7f3d0;
-      border: 1px solid rgba(22, 163, 74, 0.7);
-    }
-
-    .doc-section {
-      margin-bottom: 0.5rem;
-    }
-
-    .doc-section-title {
-      font-weight: 600;
-      color: #e5e7eb;
-      margin-bottom: 0.12rem;
-    }
-
-    .doc-section-body {
-      color: var(--text-soft);
-    }
-
-    .doc-section-body mark {
-      background: rgba(56, 189, 248, 0.19);
-      padding: 0.04rem 0.12rem;
-      border-radius: 0.25rem;
-      color: #e0f2fe;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      margin-top: 0.25rem;
-    }
-
-    .pill {
-      font-size: 0.7rem;
-      padding: 0.12rem 0.4rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.96);
-    }
-
-    /* Export footer */
-    .footer-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 0.45rem;
-      font-size: 0.75rem;
-      color: var(--text-soft);
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .export-buttons {
-      display: flex;
-      gap: 0.4rem;
-    }
+    .hidden{ display:none !important; }
   </style>
 </head>
 <body>
+  <!-- Top bar -->
   <header class="topbar">
     <div class="brand">
       <div class="brand-logo"></div>
       <div class="brand-title">
-        <span>流域シナリオAI</span>
-        <span>洪水リスク説明スタジオ</span>
+        <span>RIVER BASIN SCENARIO AI</span>
+        <span>流域治水 説明シナリオスタジオ</span>
       </div>
     </div>
     <div class="topbar-right">
-      <div class="badge">パイロット：●●川流域</div>
-      <span>LLM: GPT-4.1 · Azure OpenAI</span>
+      <div class="role-toggle">
+        <button class="role-btn active" id="userRoleBtn" type="button">利用者ビュー</button>
+        <button class="role-btn" id="adminRoleBtn" type="button">管理者コンソール</button>
+      </div>
+      <div class="badge">対象水系：●●川水系（PoC）</div>
     </div>
   </header>
 
   <main class="app-shell">
-    <!-- Sidebar -->
-    <aside class="sidebar">
+    <!-- USER SIDEBAR -->
+    <aside class="sidebar" id="userSidebar">
       <div class="sidebar-header">
-        <h2>シナリオの流れ</h2>
-        <p>資料から説明会資料までを8つのステップで案内します。</p>
+        <h2>利用者フロー – 説明シナリオ作成</h2>
+        <p>河川管理者などの利用者が、データには触れずにシナリオ作成だけを行うビューです。</p>
       </div>
-      <ul class="step-list" id="stepList">
-        <li class="step-item active" data-step="1">
+      <ul class="step-list" id="userStepList">
+        <li class="step-item active" data-step="u1">
           <div class="step-index">1</div>
           <div>
-            <div class="step-title">PDFをアップロード</div>
-            <div class="step-caption">方針・計画・ハザードマップ</div>
+            <div class="step-title">対象者を選ぶ</div>
+            <div class="step-caption">住民（大人）、こども、企業、専門家など</div>
           </div>
         </li>
-        <li class="step-item" data-step="2">
+        <li class="step-item" data-step="u2">
           <div class="step-index">2</div>
           <div>
-            <div class="step-title">インデックス</div>
-            <div class="step-caption">分割・ベクトル化してRAGに同期</div>
+            <div class="step-title">資料に基づいて質問</div>
+            <div class="step-caption">公開資料に基づくQ&A（RAG）</div>
           </div>
         </li>
-        <li class="step-item" data-step="3">
+        <li class="step-item" data-step="u3">
           <div class="step-index">3</div>
           <div>
-            <div class="step-title">質問する</div>
-            <div class="step-caption">知識ベースを探索</div>
+            <div class="step-title">説明シナリオを生成</div>
+            <div class="step-caption">構成案と時間配分</div>
           </div>
         </li>
-        <li class="step-item" data-step="4">
+        <li class="step-item" data-step="u4">
           <div class="step-index">4</div>
           <div>
-            <div class="step-title">シナリオ作成</div>
-            <div class="step-caption">台本とアウトラインを自動生成</div>
+            <div class="step-title">チャットで微調整</div>
+            <div class="step-caption">わかりやすさ・専門性の調整</div>
           </div>
         </li>
-        <li class="step-item" data-step="5">
+        <li class="step-item" data-step="u5">
           <div class="step-index">5</div>
           <div>
-            <div class="step-title">AIとチャット</div>
-            <div class="step-caption">説明内容を対話的に調整</div>
-          </div>
-        </li>
-        <li class="step-item" data-step="6">
-          <div class="step-index">6</div>
-          <div>
-            <div class="step-title">編集</div>
-            <div class="step-caption">手動で修正し地域の事情を反映</div>
-          </div>
-        </li>
-        <li class="step-item" data-step="7">
-          <div class="step-index">7</div>
-          <div>
-            <div class="step-title">エクスポート</div>
-            <div class="step-caption">PowerPoint・PDF・台本</div>
+            <div class="step-title">編集・エクスポート</div>
+            <div class="step-caption">スライド・台本・配布資料に出力</div>
           </div>
         </li>
       </ul>
       <div class="sidebar-footer">
-        このモックUIはデモ専用であり、実際のデータは処理しません。
-        流域管理者、住民、社内関係者に一連の流れを説明するために使う想定です。
+        <b>利用者ビュー：</b>  
+        ファイルアップロードやインデックス設定には一切触れられません。  
+        できるのは「質問する」「シナリオを作る・編集する」「資料として出力する」だけです。
       </div>
     </aside>
 
-    <!-- Main content -->
-    <section class="main">
+    <!-- ADMIN SIDEBAR -->
+    <aside class="sidebar hidden" id="adminSidebar">
+      <div class="sidebar-header">
+        <h2>管理者フロー – ナレッジ・RAG管理</h2>
+        <p>管理者が文書登録、インデックス作成、更新スケジュール、監視を行うビューです。</p>
+      </div>
+      <ul class="step-list" id="adminStepList">
+        <li class="step-item active" data-step="a1">
+          <div class="step-index">1</div>
+          <div>
+            <div class="step-title">文書の登録・管理</div>
+            <div class="step-caption">方針・計画・想定浸水区域図など</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="a2">
+          <div class="step-index">2</div>
+          <div>
+            <div class="step-title">インデックス作成・RAG</div>
+            <div class="step-caption">分割・ベクトル化・公開</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="a3">
+          <div class="step-index">3</div>
+          <div>
+            <div class="step-title">データソースと自動更新</div>
+            <div class="step-caption">Web/RPAでの更新ルール</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="a4">
+          <div class="step-index">4</div>
+          <div>
+            <div class="step-title">監視・権限管理</div>
+            <div class="step-caption">利用状況とロールコントロール</div>
+          </div>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <b>管理者ビュー：</b>  
+        文書のバージョン管理、インデックス設定、Web/RPAによる自動更新、権限管理などを行います。  
+        シナリオ本文の編集はここからは行いません（利用者側で実施）。
+      </div>
+    </aside>
+
+    <!-- USER MAIN -->
+    <section class="main" id="userMain">
       <div class="main-header">
         <div class="main-header-left">
-          <h1>洪水リスク説明のシナリオを生成</h1>
-          <p>対象となる聞き手を選び、流域に関する資料をアップロードすると、AIが一貫した説明用スクリプトを作成します。</p>
-          <div class="chip-row" style="margin-top:0.4rem;">
-            <span class="chip">対象：住民（成人）</span>
-            <span class="chip">時間：15分</span>
-            <span class="chip">形式：対面説明会</span>
+          <h1>利用者スタジオ – 説明シナリオを作成</h1>
+          <p>対象者や時間を指定すると、公表資料に基づいた説明シナリオ案を自動生成します。</p>
+          <div class="chip-row">
+            <span class="chip">ロール：河川管理者・説明担当</span>
+            <span class="chip">LLM：GPT-4.1（RAG）</span>
+            <span class="chip">アップロード機能なし</span>
           </div>
         </div>
-        <div class="main-header-right">
-          <button class="btn secondary" type="button">
-            <span>子ども向けセッションとしてプレビュー</span>
-          </button>
-          <button class="btn" type="button">
-            <span>新しいシナリオ</span>
-          </button>
+        <div>
+          <button class="btn secondary" type="button">保存済みシナリオを開く</button>
+          <button class="btn" type="button" style="margin-left:0.35rem;">新しいシナリオ</button>
         </div>
       </div>
 
       <div class="panel-container">
         <div class="panel-header">
-          <h2 id="panelTitle">1 · PDFをアップロード</h2>
-          <p id="panelSubtitle">流域の方針・計画・ハザードマップをアップロードします。アプリが流域ごとの版管理を行います。</p>
+          <h2 id="userPanelTitle">1 · 対象者を選ぶ</h2>
+          <p id="userPanelSubtitle">誰に説明するかを選ぶと、言葉遣いや構成が自動で調整されます。</p>
         </div>
 
-        <!-- Panel 1: Upload -->
-        <div class="panel two-column active" data-step-panel="1">
+        <!-- U1: choose audience -->
+        <div class="panel two-col active" data-user-panel="u1">
           <div class="card">
             <div class="card-header">
-              <h3>資料一覧</h3>
-              <span>対応形式：PDF・Word・HTML</span>
+              <h3>対象者・セッション設定</h3>
+              <span>トーンや難易度、時間配分に反映されます。</span>
             </div>
             <div class="card-body">
-              <div class="upload-drop">
-                <strong>ここにファイルをドラッグ＆ドロップするか、クリックして選択してください</strong>
-                <small>例：●●川河川整備基本方針、流域治水プロジェクト2.0、洪水浸水想定図…</small>
-                <div style="margin-top:0.55rem;">
-                  <button class="btn secondary" type="button">
-                    <span>+ ファイルを選択</span>
-                  </button>
-                </div>
-              </div>
-              <div class="file-list">
-                <div class="file-row">
-                  <div>
-                    <div class="file-name">●●River_BasicImprovementPolicy_v3.pdf</div>
-                    <div class="file-meta">更新日：2024-04-01 · 184ページ</div>
-                  </div>
-                  <div class="file-meta">準備完了</div>
-                </div>
-                <div class="file-row">
-                  <div>
-                    <div class="file-name">●●River_BasinFloodProject2_0_main.pdf</div>
-                    <div class="file-meta">更新日：2023-11-20 · 92ページ</div>
-                  </div>
-                  <div class="file-meta">準備完了</div>
-                </div>
-                <div class="file-row">
-                  <div>
-                    <div class="file-name">●●River_MaximumAssumed_InundationMap.zip</div>
-                    <div class="file-meta">4レイヤー · GeoTIFF</div>
-                  </div>
-                  <div class="file-meta">準備完了</div>
-                </div>
-                <div class="file-row">
-                  <div>
-                    <div class="file-name">SelfInvolvement_StudyGroup_Meeting5.pdf</div>
-                    <div class="file-meta">スライド · 56ページ</div>
-                  </div>
-                  <div class="file-meta">準備完了</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>対象とシナリオ設定</h3>
-              <span>このシナリオの利用目的をAIに伝えます。</span>
-            </div>
-            <div class="card-body">
-              <div style="display:grid;gap:0.5rem;font-size:0.78rem;">
+              <div style="display:grid;gap:0.5rem;">
                 <label>
                   対象者の種類<br/>
                   <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
-                    <option>住民（成人）</option>
-                    <option>子ども（小学生）</option>
-                    <option>地域企業・物流事業者</option>
+                    <option>住民（大人）</option>
+                    <option>子ども（小学生想定）</option>
+                    <option>企業・物流事業者</option>
                     <option>大学・専門家</option>
                   </select>
                 </label>
                 <label>
-                  シナリオの長さ<br/>
+                  説明時間<br/>
                   <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
                     <option>10〜15分</option>
                     <option>5〜10分</option>
@@ -875,355 +561,476 @@
                   </select>
                 </label>
                 <label>
-                  トーンとスタイル<br/>
+                  説明スタイル<br/>
                   <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
-                    <option>親しみやすく分かりやすい</option>
+                    <option>やさしく・身近な言葉で</option>
                     <option>技術的・データ重視</option>
-                    <option>事例を交えたストーリーテリング</option>
+                    <option>事例を交えたストーリー型</option>
                   </select>
                 </label>
               </div>
-              <div style="margin-top:0.5rem;display:flex;justify-content:flex-end;">
-                <button class="btn" type="button">
-                  <span>次へ：インデックス作成</span>
-                </button>
+              <div style="margin-top:0.6rem;text-align:right;">
+                <button class="btn" type="button">次へ：資料に基づいて質問</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>シナリオ概要（プレビュー）</h3>
+              <span>設定を変えると随時更新されます。</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">住民（大人）· 15分 · ●●川</div>
+                  <span class="doc-tag">まだ未生成</span>
+                </div>
+                <p style="margin:0;font-size:0.78rem;color:var(--text-soft);">
+                  対象者と時間を確定すると、AI が以下を提案します：
+                </p>
+                <ul style="margin:0.4rem 0 0;padding-left:1.1rem;font-size:0.78rem;">
+                  <li>5〜6章程度の構成（過去の水害・現在のリスク・対策・住民ができること 等）</li>
+                  <li>各章の時間配分</li>
+                  <li>洪水浸水想定区域図や河川整備方針に整合した要点</li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Panel 2: Index -->
-        <div class="panel two-column" data-step-panel="2">
+        <!-- U2: chat with docs -->
+        <div class="panel two-col" data-user-panel="u2">
           <div class="card">
             <div class="card-header">
-              <h3>インデックス作成の状況</h3>
-              <span>分割・ベクトル化し、Azure AI Search と同期しています。</span>
+              <h3>資料に基づくチャット</h3>
+              <span>登録済みの公表資料だけを根拠に回答します。</span>
+            </div>
+            <div class="card-body">
+              <div class="chat-window">
+                <div class="chat-message user">
+                  直近の大きな洪水で、●●橋付近は最大でどのくらい浸水しましたか？
+                  <div class="chat-meta">あなた · 住民向けセッション</div>
+                </div>
+                <div class="chat-message ai">
+                  R1 年の豪雨時には、●●橋付近の低い街区で最大およそ
+                  <b>1.8m</b> 程度の浸水が確認されています。  
+                  これは被災後調査報告書（12〜15 ページ）の結果に基づきます。
+                  <div class="chat-meta">AI · 根拠：被災後調査報告書・浸水実績図（R1）など</div>
+                </div>
+              </div>
+              <div class="chat-input-row">
+                <input class="chat-input" placeholder="過去の水害、現在のリスク、整備内容などを質問…" />
+                <button class="btn secondary" type="button">送信</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>質問テンプレート</h3>
+              <span>「何を聞けばいいか分からない」を補助します。</span>
+            </div>
+            <div class="card-body">
+              <div class="pill-row">
+                <span class="pill">「想定最大規模の洪水」をやさしく説明して</span>
+                <span class="pill">前回の大きな洪水と今の違いは？</span>
+                <span class="pill">高齢者が特に気をつける点は？</span>
+                <span class="pill">子ども向けに言い換えて</span>
+              </div>
+              <div style="margin-top:0.7rem;">
+                <button class="btn" type="button">次へ：シナリオ生成</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- U3: generate scenario -->
+        <div class="panel two-col" data-user-panel="u3">
+          <div class="card">
+            <div class="card-header">
+              <h3>シナリオ構成案</h3>
+              <span>資料＋あなたの質問内容から自動生成します。</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">シナリオ v1 – 住民（大人）向け</div>
+                  <span class="doc-tag">AI生成</span>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">1. 導入（1分）</div>
+                  <div class="doc-section-body">あいさつ、本日の目的と流れ。</div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">2. この地域の過去の水害（3分）</div>
+                  <div class="doc-section-body">R1 年出水の概要、写真、簡単な数字。</div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">3. これから起こりうる浸水（4分）</div>
+                  <div class="doc-section-body">●●橋周辺などの想定浸水深を、地図と合わせて説明。</div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">4. 行われている対策（4分）</div>
+                  <div class="doc-section-body">流域治水プロジェクト2.0 の概要と進捗。</div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">5. 家庭でできる備え（3分）</div>
+                  <div class="doc-section-body">ハザードマップの確認、避難行動、家族で話すポイント。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>シナリオ操作</h3>
+              <span>事実は固定し、見せ方だけ変えられます。</span>
+            </div>
+            <div class="card-body">
+              <div class="pill-row">
+                <span class="pill">全体をもう少し短くする</span>
+                <span class="pill">「住民ができること」を増やす</span>
+                <span class="pill">AR/VR デモの時間を追加</span>
+              </div>
+              <div style="margin-top:0.7rem;">
+                <button class="btn" type="button">次へ：チャットで微調整</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- U4: refine by chat -->
+        <div class="panel two-col" data-user-panel="u4">
+          <div class="card">
+            <div class="card-header">
+              <h3>シナリオ調整チャット</h3>
+              <span>自然な日本語で「こうしてほしい」と伝えます。</span>
+            </div>
+            <div class="card-body">
+              <div class="chat-window">
+                <div class="chat-message user">
+                  第3章の説明を、高齢の住民の方にも分かりやすい表現にして。専門用語はできるだけ使わないでください。
+                  <div class="chat-meta">あなた</div>
+                </div>
+                <div class="chat-message ai">
+                  数値や事実はそのままにしつつ、日常のイメージで説明するように書き換えます。
+                  <div class="chat-meta">AI · シナリオ編集エージェント</div>
+                </div>
+              </div>
+              <div class="chat-input-row">
+                <input class="chat-input" placeholder="やさしく・短く・専門的になど、調整したいことを入力…" />
+                <button class="btn secondary" type="button">適用</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>対象変更（バリエーション）</h3>
+              <span>同じ構成で、言葉だけ変えたパターンを作成。</span>
+            </div>
+            <div class="card-body">
+              <div class="pill-row">
+                <span class="pill">子ども（10分）向けに変換</span>
+                <span class="pill">企業のBCP説明会用に変換</span>
+                <span class="pill">専門家向け技術資料を追加</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- U5: edit & export -->
+        <div class="panel two-col" data-user-panel="u5">
+          <div class="card">
+            <div class="card-header">
+              <h3>手動編集</h3>
+              <span>最終的な人間によるチェック・修正。</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">第3章 – 編集後テキスト</div>
+                  <span class="doc-tag">人の目で確認</span>
+                </div>
+                <textarea>とても大きな洪水が起きた場合、このあたりの地域では水の深さが1〜2メートルになるおそれがあります。これは、車がほぼ隠れてしまい、1階の窓の高さ近くまで水が来るイメージです。
+
+●●橋に近い、特に低い場所では、3メートル近くまで達するところもあります。そのような状況になると、車での避難はかえって危険になる可能性があります。早めに歩いて移動する、もしくは近くの高い建物に避難することが大切です。</textarea>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>エクスポート</h3>
+              <span>利用者が最終的に受け取るアウトプット。</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">出力パッケージ</div>
+                  <span class="doc-tag">準備完了</span>
+                </div>
+                <ul style="margin:0;padding-left:1.1rem;font-size:0.78rem;">
+                  <li>PowerPoint スライド（12枚想定）</li>
+                  <li>説明用台本（PDF）</li>
+                  <li>住民向け1枚配布資料</li>
+                  <li>シナリオ JSON（再利用・社内共有用）</li>
+                </ul>
+                <div class="footer-bar">
+                  <div>シナリオID：<code>●●-residents-2024-11-001</code></div>
+                  <div>
+                    <button class="btn secondary" type="button">PPTX をプレビュー</button>
+                    <button class="btn" type="button" style="margin-left:0.3rem;">一括エクスポート</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ADMIN MAIN -->
+    <section class="main hidden" id="adminMain">
+      <div class="main-header">
+        <div class="main-header-left">
+          <h1>管理者コンソール – ナレッジと RAG を管理</h1>
+          <p>文書の登録・バージョン管理、インデックス作成、Web/RPA 更新、権限管理を行います。</p>
+          <div class="chip-row">
+            <span class="chip">ロール：システム管理者・エンジニア</span>
+            <span class="chip">Azure AI Search · Blob · RPA</span>
+            <span class="chip">全利用者に影響</span>
+          </div>
+        </div>
+        <div>
+          <button class="btn secondary" type="button">ログを表示</button>
+          <button class="btn" type="button" style="margin-left:0.35rem;">新しい水系を登録</button>
+        </div>
+      </div>
+
+      <div class="panel-container">
+        <div class="panel-header">
+          <h2 id="adminPanelTitle">1 · 文書の登録・管理</h2>
+          <p id="adminPanelSubtitle">水系ごとに公表資料を登録し、承認済みのみが RAG の対象となるよう管理します。</p>
+        </div>
+
+        <!-- A1: upload & manage -->
+        <div class="panel two-col active" data-admin-panel="a1">
+          <div class="card">
+            <div class="card-header">
+              <h3>文書アップロード</h3>
+              <span>管理者のみが公式ナレッジベースを更新できます。</span>
+            </div>
+            <div class="card-body">
+              <div class="upload-drop">
+                <strong>新規／改訂版のファイルをここにドラッグ＆ドロップ</strong>
+                <small>河川整備基本方針・河川整備計画・流域治水プロジェクト・浸水想定区域図など</small>
+                <div style="margin-top:0.55rem;">
+                  <button class="btn secondary" type="button">+ ファイルを選択</button>
+                </div>
+              </div>
+              <div class="file-list">
+                <div class="file-row">
+                  <div>
+                    <div class="file-name">●●川水系_河川整備基本方針_v3.pdf</div>
+                    <div class="file-meta">状態：承認済み・利用中 · 184ページ</div>
+                  </div>
+                  <div class="file-meta">v3</div>
+                </div>
+                <div class="file-row">
+                  <div>
+                    <div class="file-name">●●川水系_河川整備基本方針_v2.pdf</div>
+                    <div class="file-meta">状態：廃止・参照用に保存</div>
+                  </div>
+                  <div class="file-meta">v2</div>
+                </div>
+                <div class="file-row">
+                  <div>
+                    <div class="file-name">●●川水系_流域治水プロジェクト2_0_概要.pdf</div>
+                    <div class="file-meta">状態：承認済み · 再インデックス待ち</div>
+                  </div>
+                  <div class="file-meta">v1</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>水系・コレクション</h3>
+              <span>複数水系をまとめて管理できます。</span>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;gap:0.5rem;">
+                <label>
+                  対象水系<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>●●川水系</option>
+                    <option>△△川水系</option>
+                    <option>□□川水系</option>
+                  </select>
+                </label>
+                <label>
+                  コレクション<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>方針・計画類</option>
+                    <option>浸水想定区域図</option>
+                    <option>検討会・ワーキング資料</option>
+                  </select>
+                </label>
+              </div>
+              <div style="margin-top:0.7rem;text-align:right;">
+                <button class="btn" type="button">次へ：インデックス・RAG</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- A2: indexing & RAG -->
+        <div class="panel two-col" data-admin-panel="a2">
+          <div class="card">
+            <div class="card-header">
+              <h3>インデックス状況</h3>
+              <span>分割・埋め込み・公開の進行状況。</span>
             </div>
             <div class="card-body">
               <div class="status-pill">
                 <span class="status-dot"></span>
-                <span>インデックス作成中 · 68%完了</span>
+                <span>インデックス再構築中 · 72% 完了</span>
               </div>
               <div class="progress-bar">
                 <div class="progress-bar-inner"></div>
               </div>
-              <div style="margin-top:0.5rem;font-size:0.78rem;">
-                <strong>現在処理中のバッチ</strong>
-                <div style="margin-top:0.25rem;color:var(--text-soft);">
-                  <b>●●River_BasinFloodProject2_0_main.pdf</b> の更新部分を埋め込み処理しています。<br/>
-                  古い版の方針文書を自動で検出し、退役させています。
-                </div>
-              </div>
-              <div class="log" style="margin-top:0.6rem;">
+              <div class="log">
                 <div class="log-line">
-                  <span class="log-time">12:03:11</span>
-                  <span class="log-msg">[AI Search] インデックス <b>basin_●●_pdf_index</b> を作成しました</span>
+                  <span class="log-time">12:10:03</span>
+                  <span class="log-msg">[AI Search] インデックス basin_●●_pdf_index を再構築中</span>
                 </div>
                 <div class="log-line">
-                  <span class="log-time">12:03:18</span>
-                  <span class="log-msg">[ETL] 184ページを1,236個の意味単位に分割</span>
+                  <span class="log-time">12:10:15</span>
+                  <span class="log-msg">[ETL] 基本方針 v3 から 1,236 チャンクを作成</span>
                 </div>
                 <div class="log-line">
-                  <span class="log-time">12:03:25</span>
-                  <span class="log-msg">[Embedding] gpt-4.1-embed: 52,100トークンを処理</span>
+                  <span class="log-time">12:10:26</span>
+                  <span class="log-msg">[Embedding] text-embedding-3-large: 52,100 トークン</span>
                 </div>
                 <div class="log-line">
-                  <span class="log-time">12:03:32</span>
-                  <span class="log-msg">[Dedup] 方針文書 v2（2015-06-01版）を退役</span>
-                </div>
-                <div class="log-line">
-                  <span class="log-time">12:03:44</span>
-                  <span class="log-msg">[RAG] 「想定最大規模降雨」に関する問い合わせ用キャッシュをウォームアップ</span>
+                  <span class="log-time">12:10:39</span>
+                  <span class="log-msg">[Cleanup] 基本方針 v2 を retired に設定</span>
                 </div>
               </div>
             </div>
           </div>
-
           <div class="card">
             <div class="card-header">
-              <h3>利用者画面での見え方</h3>
-              <span>専門用語を使わないシンプルな状況表示。</span>
+              <h3>RAG 設定</h3>
+              <span>エンジニア向けの技術パラメータ（利用者からは隠蔽）。</span>
             </div>
             <div class="card-body">
-              <ul style="margin:0;padding-left:1.1rem;font-size:0.78rem;color:var(--text-soft);">
-                <li>緑 = チャットとシナリオ生成で利用可能。</li>
-                <li>黄 = インデックス作成中（追加のファイルをアップロード可能）。</li>
-                <li>赤 = 無効または古いファイル（対処方法を案内）。</li>
-              </ul>
+              <div style="display:grid;gap:0.5rem;font-size:0.78rem;">
+                <label>
+                  取得するチャンク数（Top K）<br/>
+                  <input type="number" value="5" style="width:100%;margin-top:0.18rem;padding:0.28rem 0.5rem;border-radius:0.6rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                </label>
+                <label>
+                  厳格さ（Strictness）<br/>
+                  <input type="number" value="3" min="1" max="5" style="width:100%;margin-top:0.18rem;padding:0.28rem 0.5rem;border-radius:0.6rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                </label>
+                <label>
+                  Web 検索の使い方<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>RAG でヒットしない時のみ併用</option>
+                    <option>常に RAG + Web を併用</option>
+                    <option>Web 検索は使用しない</option>
+                  </select>
+                </label>
+              </div>
               <div style="margin-top:0.7rem;">
-                <button class="btn" type="button">
-                  <span>次へ：質問する</span>
-                </button>
-                <button class="btn secondary" type="button" style="margin-left:0.3rem;">
-                  <span>インデックスの詳細を見る</span>
-                </button>
+                <button class="btn" type="button">この設定でインデックスを更新</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Panel 3: Ask questions -->
-        <div class="panel two-column" data-step-panel="3">
+        <!-- A3: data sources & schedules -->
+        <div class="panel two-col" data-admin-panel="a3">
           <div class="card">
             <div class="card-header">
-              <h3>資料に基づいてチャット</h3>
-              <span>インデックス化された資料に基づくQ&A。</span>
-            </div>
-            <div class="card-body">
-              <div class="chat-window">
-                <div class="chat-message user">
-                  ●●橋の近くに住む住民にとって、「想定最大規模」の洪水では水深はどのくらいになりますか？
-                  <div class="chat-meta">あなた · 資料ベースQ&A</div>
-                </div>
-                <div class="chat-message ai">
-                  想定最大規模の降雨が発生した場合、●●橋周辺の浸水深は一般的に
-                  <b>1.0〜2.0m</b>程度で、一部の低地では<b>3.0m</b>に達する区域もあります。
-                  <br/><br/>
-                  これは「●●川 想定最大規模浸水想定図（R5改訂）」および
-                  流域治水プロジェクト関連資料（42〜46ページ）に基づいています。
-                  <div class="chat-meta">AI · 出典：方針v3（2024）、浸水想定図（R5）</div>
-                </div>
-                <div class="chat-message user">
-                  これをスライドのタイトル用に、1文で要約してください。
-                  <div class="chat-meta">あなた</div>
-                </div>
-                <div class="chat-message ai">
-                  「●●橋周辺では、洪水時に水深が約2メートルに達し、車が水没したり住宅1階が浸水したりするおそれがあります。」
-                  <div class="chat-meta">AI · スタイル：住民向け・やさしい表現</div>
-                </div>
-              </div>
-              <div class="chat-input-row">
-                <input class="chat-input" placeholder="過去の洪水、現在の事業、将来のリスクなどを質問してください…" />
-                <button class="btn secondary" type="button">
-                  <span>送信</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>おすすめの質問例</h3>
-              <span>専門家でない利用者向けの質問テンプレート。</span>
-            </div>
-            <div class="card-body">
-              <div class="pill-row">
-                <span class="pill">「想定最大規模の洪水」とは何か説明して。</span>
-                <span class="pill">過去50年間の主な洪水を教えて。</span>
-                <span class="pill">現在と計画中の堤防の高さを比較して。</span>
-                <span class="pill">なぜ流域全体での協力が必要なの？</span>
-                <span class="pill">小学校5年生向けに書き直して。</span>
-              </div>
-              <div style="margin-top:0.9rem;">
-                <button class="btn" type="button">
-                  <span>次へ：シナリオを作成</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel 4: Build scenario -->
-        <div class="panel two-column" data-step-panel="4">
-          <div class="card">
-            <div class="card-header">
-              <h3>シナリオテンプレート</h3>
-              <span>説明会の構成を整理したアウトライン。</span>
+              <h3>データソース</h3>
+              <span>新しい文書をどこから取り込むか。</span>
             </div>
             <div class="card-body">
               <div class="doc-preview">
                 <div class="doc-header">
-                  <div class="doc-title">シナリオ：住民向け · 15分 · ●●川</div>
-                  <span class="doc-tag">ドラフトv1 · AI生成</span>
-                </div>
-                <div class="doc-section">
-                  <div class="doc-section-title">1. 導入（1分）</div>
-                  <div class="doc-section-body">
-                    あいさつと本日の目的：「自分ごととして洪水リスクを理解すること」。
-                  </div>
-                </div>
-                <div class="doc-section">
-                  <div class="doc-section-title">2. この地域の過去の洪水（3分）</div>
-                  <div class="doc-section-body">
-                    <mark>R元年の大雨</mark>と●●橋周辺の被害を、写真と分かりやすい数字で簡単に振り返る。
-                  </div>
-                </div>
-                <div class="doc-section">
-                  <div class="doc-section-title">3. いま起こりうる洪水（4分）</div>
-                  <div class="doc-section-body">
-                    「想定最大規模の洪水」浸水想定図を使い、主要な地域での水深<mark>1〜2m</mark>が
-                    車や1階部分、避難のタイミングにどのような影響を与えるかを説明する。
-                  </div>
-                </div>
-                <div class="doc-section">
-                  <div class="doc-section-title">4. 実施されている対策（4分）</div>
-                  <div class="doc-section-body">
-                    堤防のかさ上げ、遊水地、上流での対策など、流域治水プロジェクト2.0の内容を要約する。
-                  </div>
-                </div>
-                <div class="doc-section">
-                  <div class="doc-section-title">5. 各家庭でできること（3分）</div>
-                  <div class="doc-section-body">
-                    自宅周辺のハザードマップの水深を確認し、避難経路を準備し、近所や家族と話し合う。
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>スクリプトを生成</h3>
-              <span>各セクションの原稿全文をワンクリックで生成。</span>
-            </div>
-            <div class="card-body">
-              <p style="font-size:0.8rem;color:var(--text-soft);margin-top:0;">
-                AIエージェントが、インデックス化された資料とウェブ検索だけを使って、各セクションに話者メモ、時間配分、スライドのヒントを埋めていきます。
-              </p>
-              <div style="margin-top:0.6rem;">
-                <button class="btn" type="button">
-                  <span>全文スクリプトを生成</span>
-                </button>
-                <button class="btn secondary" type="button" style="margin-left:0.3rem;">
-                  <span>別のトーンで再生成</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel 5: Chat with AI -->
-        <div class="panel two-column" data-step-panel="5">
-          <div class="card">
-            <div class="card-header">
-              <h3>シナリオ調整チャット</h3>
-              <span>内容や言い回しの調整をAIに依頼します。</span>
-            </div>
-            <div class="card-body">
-              <div class="chat-window">
-                <div class="chat-message user">
-                  第3章を高齢の住民にも分かりやすい内容にしてください。専門用語はできるだけ減らしてください。
-                  <div class="chat-meta">あなた</div>
-                </div>
-                <div class="chat-message ai">
-                  第3章を簡潔にし、「再現期間」や「計画降雨」のような専門用語は避けます。
-                  代わりに「めったにないが起こりうる大雨」といった表現を使い、水深と避難のタイミングに焦点を当てます。
-                  <div class="chat-meta">AI · シナリオ編集</div>
-                </div>
-                <div class="chat-message ai">
-                  <b>更新後の第3章（抜粋）:</b><br/>
-                  「もし●●川流域で私たちが想定できる中で最も激しい雨が降ると、この地域の水深はおよそ1〜2メートルになる可能性があります。
-                  これは車が水没し、住宅1階の窓付近まで水が来る高さです…」
-                  <div class="chat-meta">AI · 根拠：浸水想定図（R5）</div>
-                </div>
-              </div>
-              <div class="chat-input-row">
-                <input class="chat-input" placeholder="短くしてほしい、言い換えてほしい、地域の例を追加してほしいなどをAIに指示してください…" />
-                <button class="btn secondary" type="button">
-                  <span>反映する</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>対象をその場で切り替え</h3>
-              <span>同じシナリオ構成を別の対象グループ向けに再利用できます。</span>
-            </div>
-            <div class="card-body">
-              <p style="font-size:0.8rem;color:var(--text-soft);margin-top:0;">
-                ワンクリックで、同じ構成を子ども向け、企業向け、専門家向けなどに書き換えつつ、事実や数字の整合性を保ちます。
-              </p>
-              <div class="pill-row">
-                <span class="pill">小学生向けの授業用に変換</span>
-                <span class="pill">物流業の事業継続を強調</span>
-                <span class="pill">大学教員向けに技術付録を追加</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel 6: Edit -->
-        <div class="panel two-column" data-step-panel="6">
-          <div class="card">
-            <div class="card-header">
-              <h3>手動編集</h3>
-              <span>エクスポート前の最終的な人手による調整。</span>
-            </div>
-            <div class="card-body">
-              <div class="doc-preview">
-                <div class="doc-header">
-                  <div class="doc-title">スクリプトエディタ</div>
-                  <span class="doc-tag">人のチェックを含む運用</span>
-                </div>
-                <div class="doc-section">
-                  <div class="doc-section-title">3. いま起こりうる洪水（編集済み）</div>
-                  <textarea style="width:100%;height:130px;background:#020617;color:#e5e7eb;border-radius:0.8rem;border:1px solid rgba(148,163,184,0.7);padding:0.4rem 0.5rem;font-size:0.78rem;resize:none;">
-もし●●川流域で非常に激しい雨が降ると、この地域の浸水深はおよそ1〜2メートルに達する可能性があります。
-これは車が水没し、住宅1階の窓付近まで水が来る高さです。
-
-●●橋付近の低い地域では、水深が最大3メートル程度に達するおそれがあります。
-その場合、車での避難は危険であり、早めに徒歩で、または近くの高い建物に避難する方が安全です。</textarea>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>編集ツール</h3>
-              <span>内容の整合性を保つための補助機能。</span>
-            </div>
-            <div class="card-body">
-              <div class="pill-row">
-                <span class="pill">用語の確認（「想定最大規模の洪水」を使用）</span>
-                <span class="pill">数字を最新の方針と一致させる</span>
-                <span class="pill">全体を12分に短縮</span>
-                <span class="pill">重要なメッセージを太字で強調</span>
-              </div>
-              <p style="margin-top:0.7rem;font-size:0.78rem;color:var(--text-soft);">
-                これらの操作では、厳格な根拠ルールを適用してAIを再呼び出しし、手動で編集した後でも事実が最新の資料と一致するようにします。
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel 7: Export -->
-        <div class="panel single-column" data-step-panel="7">
-          <div class="card">
-            <div class="card-header">
-              <h3>エクスポートして共有</h3>
-              <span>説明会に必要な資料を生成します。</span>
-            </div>
-            <div class="card-body">
-              <div class="doc-preview">
-                <div class="doc-header">
-                  <div class="doc-title">エクスポートパッケージ</div>
-                  <span class="doc-tag">すぐに利用可能</span>
+                  <div class="doc-title">ソース一覧</div>
+                  <span class="doc-tag">RPA / API</span>
                 </div>
                 <ul style="margin:0;padding-left:1.1rem;font-size:0.78rem;">
-                  <li><b>PowerPoint資料</b> – タイトル・箇条書き・洪水マップ用プレースホルダー付きの12スライド。</li>
-                  <li><b>話者用スクリプト（PDF）</b> – 時間配分とAR/VRデモ用のキュー付き原稿。</li>
-                  <li><b>1枚もの配布資料</b> – 簡単な図と「自宅でできる3つのこと」を掲載。</li>
-                  <li><b>JSONシナリオ</b> – 他の対象向けに再利用・再生成できる構造化データ。</li>
+                  <li>国交省の流域治水関連ポータル（RSS + HTMLスクレイピング）</li>
+                  <li>自治体の水害・防災情報ページ</li>
+                  <li>社内共有フォルダ（検討会資料 等）</li>
                 </ul>
-                <div class="footer-bar">
-                  <div>シナリオID: <code>●●-residents-2024-11-001</code></div>
-                  <div class="export-buttons">
-                    <button class="btn secondary" type="button">
-                      <span>PPTXをプレビュー</span>
-                    </button>
-                    <button class="btn" type="button">
-                      <span>すべてエクスポート</span>
-                    </button>
-                  </div>
-                </div>
               </div>
-              <p style="margin-top:0.8rem;font-size:0.78rem;color:var(--text-soft);">
-                実際のシステムでは、このステップでAzure Blob Storage、Office API、文書生成バックエンドを呼び出して実ファイルを生成します。
-                このモックでは、利用者体験のイメージのみを表示しています。
-              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>更新スケジュール</h3>
+              <span>どの頻度で取得・再インデックスするか。</span>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;gap:0.5rem;font-size:0.78rem;">
+                <label>
+                  Web クロール頻度<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>週1回</option>
+                    <option>毎日</option>
+                    <option>月1回</option>
+                  </select>
+                </label>
+                <label>
+                  自動再インデックス<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>新しい文書／バージョン検知時に自動実行</option>
+                    <option>管理者が手動実行のみ</option>
+                  </select>
+                </label>
+              </div>
+              <div style="margin-top:0.7rem;">
+                <button class="btn" type="button">スケジュールを保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- A4: monitoring & access -->
+        <div class="panel two-col" data-admin-panel="a4">
+          <div class="card">
+            <div class="card-header">
+              <h3>システムヘルス</h3>
+              <span>管理者向けのダッシュボードイメージ。</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">●●川水系の状態</div>
+                  <span class="doc-tag">問題なし</span>
+                </div>
+                <ul style="margin:0;padding-left:1.1rem;font-size:0.78rem;">
+                  <li>RAG インデックス：正常 · 最終更新 2 時間前</li>
+                  <li>Web クロール：3 日前に実施 · 新規 1 ファイル</li>
+                  <li>LLM 利用状況：1 週間で 132 セッション</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>アクセス権・ロール</h3>
+              <span>誰が何をできるか。</span>
+            </div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:1.1rem;font-size:0.78rem;">
+                <li><b>利用者</b> – チャット、シナリオ生成・編集・エクスポートが可能。</li>
+                <li><b>管理者</b> – 文書登録、インデックス設定、更新スケジュール、権限管理が可能。</li>
+                <li><b>閲覧者</b> – 共有されたシナリオの閲覧のみ。</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -1233,36 +1040,80 @@
   </main>
 
   <script>
-    const steps = document.querySelectorAll(".step-item");
-    const panels = document.querySelectorAll(".panel");
-    const panelTitle = document.getElementById("panelTitle");
-    const panelSubtitle = document.getElementById("panelSubtitle");
+    // Role toggle
+    const userRoleBtn = document.getElementById("userRoleBtn");
+    const adminRoleBtn = document.getElementById("adminRoleBtn");
+    const userSidebar = document.getElementById("userSidebar");
+    const adminSidebar = document.getElementById("adminSidebar");
+    const userMain = document.getElementById("userMain");
+    const adminMain = document.getElementById("adminMain");
 
-    const titles = {
-      1: ["1 · PDFをアップロード", "河川に関する公的な資料をアップロードします。システムが流域ごとの版を管理します。"],
-      2: ["2 · インデックス", "資料を自動的に分割・ベクトル化し、RAGインデックスに登録します。"],
-      3: ["3 · 質問する", "方針・計画・ハザードマップに基づく双方向Q&A。"],
-      4: ["4 · シナリオ作成", "選択した対象者向けの構成されたストーリーを生成します。"],
-      5: ["5 · AIとチャット", "自然な言葉で指示してシナリオを磨き上げます。"],
-      6: ["6 · 編集", "事実関係を保ったまま、人手で最終調整します。"],
-      7: ["7 · エクスポート", "説明会用のPowerPoint、台本、配布資料を作成します。"]
+    userRoleBtn.addEventListener("click", () => {
+      userRoleBtn.classList.add("active");
+      adminRoleBtn.classList.remove("active");
+      userSidebar.classList.remove("hidden");
+      userMain.classList.remove("hidden");
+      adminSidebar.classList.add("hidden");
+      adminMain.classList.add("hidden");
+    });
+
+    adminRoleBtn.addEventListener("click", () => {
+      adminRoleBtn.classList.add("active");
+      userRoleBtn.classList.remove("active");
+      adminSidebar.classList.remove("hidden");
+      adminMain.classList.remove("hidden");
+      userSidebar.classList.add("hidden");
+      userMain.classList.add("hidden");
+    });
+
+    // User steps
+    const userSteps = document.querySelectorAll("#userStepList .step-item");
+    const userPanels = document.querySelectorAll("[data-user-panel]");
+    const userTitles = {
+      u1: ["1 · 対象者を選ぶ", "誰に説明するかを選ぶと、言葉遣いや構成が自動で調整されます。"],
+      u2: ["2 · 資料に基づいて質問", "公表資料・地図を根拠とした Q&A を行います。"],
+      u3: ["3 · 説明シナリオを生成", "説明会の構成と時間配分を自動生成します。"],
+      u4: ["4 · チャットで微調整", "自然な日本語でトーンや詳細レベルを調整します。"],
+      u5: ["5 · 編集・エクスポート", "最終確認のうえ、スライドや台本として出力します。"]
     };
+    const userPanelTitle = document.getElementById("userPanelTitle");
+    const userPanelSubtitle = document.getElementById("userPanelSubtitle");
 
-    steps.forEach(step => {
+    userSteps.forEach(step => {
       step.addEventListener("click", () => {
-        const stepId = step.getAttribute("data-step");
-
-        steps.forEach(s => s.classList.remove("active"));
+        const id = step.getAttribute("data-step");
+        userSteps.forEach(s => s.classList.remove("active"));
         step.classList.add("active");
-
-        panels.forEach(p => {
-          p.classList.toggle("active", p.getAttribute("data-step-panel") === stepId);
+        userPanels.forEach(p => {
+          p.classList.toggle("active", p.getAttribute("data-user-panel") === id);
         });
+        userPanelTitle.textContent = userTitles[id][0];
+        userPanelSubtitle.textContent = userTitles[id][1];
+      });
+    });
 
-        if (titles[stepId]) {
-          panelTitle.textContent = titles[stepId][0];
-          panelSubtitle.textContent = titles[stepId][1];
-        }
+    // Admin steps
+    const adminSteps = document.querySelectorAll("#adminStepList .step-item");
+    const adminPanels = document.querySelectorAll("[data-admin-panel]");
+    const adminTitles = {
+      a1: ["1 · 文書の登録・管理", "水系ごとに公表資料を登録し、承認済みのみを RAG の対象にします。"],
+      a2: ["2 · インデックス作成・RAG", "分割・埋め込み・検索の挙動を制御します。"],
+      a3: ["3 · データソースと自動更新", "新しい文書の取得元と更新頻度を設定します。"],
+      a4: ["4 · 監視・権限管理", "システム状態とロール／権限を管理します。"]
+    };
+    const adminPanelTitle = document.getElementById("adminPanelTitle");
+    const adminPanelSubtitle = document.getElementById("adminPanelSubtitle");
+
+    adminSteps.forEach(step => {
+      step.addEventListener("click", () => {
+        const id = step.getAttribute("data-step");
+        adminSteps.forEach(s => s.classList.remove("active"));
+        step.classList.add("active");
+        adminPanels.forEach(p => {
+          p.classList.toggle("active", p.getAttribute("data-admin-panel") === id);
+        });
+        adminPanelTitle.textContent = adminTitles[id][0];
+        adminPanelSubtitle.textContent = adminTitles[id][1];
       });
     });
   </script>

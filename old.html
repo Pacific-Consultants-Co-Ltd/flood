@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flood Scenario Assistant – Mock UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: #0b1020;
+      --card: #111827;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.06);
+      --accent-border: rgba(56, 189, 248, 0.35);
+      --text: #e5e7eb;
+      --text-soft: #9ca3af;
+      --danger: #fb7185;
+      --radius-xl: 18px;
+      --radius-2xl: 26px;
+      --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.40);
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top left, #1d243a 0, #050816 42%);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Layout */
+    .app-shell {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 1.5rem;
+      padding: 1.25rem 1.75rem 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+        padding: 0.75rem;
+      }
+    }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.75rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      backdrop-filter: blur(14px);
+      background: radial-gradient(circle at top left,
+        rgba(56, 189, 248, 0.08),
+        rgba(15, 23, 42, 0.96));
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: conic-gradient(from 160deg, #38bdf8, #22c55e, #6366f1, #38bdf8);
+      position: relative;
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.85);
+    }
+
+    .brand-logo::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: inherit;
+      background: radial-gradient(circle at 30% 25%, #f9fafb, #0f172a);
+      mix-blend-mode: screen;
+      opacity: 0.4;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .brand-title span:first-child {
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .brand-title span:last-child {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f9fafb;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .badge {
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      border-radius: var(--radius-2xl);
+      background: linear-gradient(145deg, #020617, #020617 52%, #020617);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: var(--shadow-soft);
+      padding: 1.1rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      background: radial-gradient(circle at top,
+        rgba(56, 189, 248, 0.1),
+        transparent 52%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .sidebar-header {
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar-header h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #e5e7eb;
+    }
+
+    .sidebar-header p {
+      margin: 0.2rem 0 0;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    .step-list {
+      list-style: none;
+      margin: 0.6rem 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background var(--transition-fast),
+        border-color var(--transition-fast),
+        transform 0.09s ease-out;
+      border: 1px solid transparent;
+      color: var(--text-soft);
+      font-size: 0.78rem;
+    }
+
+    .step-item:hover {
+      background: rgba(31, 41, 55, 0.9);
+      border-color: rgba(148, 163, 184, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .step-item.active {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+      color: #e5f4ff;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9), 0 0 20px rgba(56, 189, 248, 0.35);
+    }
+
+    .step-index {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      background: rgba(15, 23, 42, 0.9);
+      color: #cbd5f5;
+    }
+
+    .step-item.active .step-index {
+      background: var(--accent);
+      color: #0b1120;
+      border-color: transparent;
+    }
+
+    .step-title {
+      font-weight: 500;
+    }
+
+    .step-caption {
+      font-size: 0.72rem;
+      opacity: 0.8;
+    }
+
+    .sidebar-footer {
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      margin-top: 0.8rem;
+      padding: 0.6rem 0.5rem;
+      border-radius: 0.9rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px dashed rgba(148, 163, 184, 0.4);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Main */
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+
+    .main-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-header-left h1 {
+      margin: 0;
+      font-size: 1.32rem;
+      letter-spacing: 0.03em;
+    }
+
+    .main-header-left p {
+      margin: 0.25rem 0 0;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .chip-row {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .chip {
+      font-size: 0.7rem;
+      padding: 0.16rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .main-header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.45rem 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent);
+      color: #020617;
+      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.45);
+      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out,
+        background 0.12s ease-out;
+    }
+
+    .btn span {
+      font-size: 0.9rem;
+    }
+
+    .btn.secondary {
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-soft);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(56, 189, 248, 0.55);
+    }
+
+    .btn.secondary:hover {
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
+    }
+
+    /* Panels container */
+    .panel-container {
+      flex: 1;
+      border-radius: var(--radius-2xl);
+      background: radial-gradient(circle at top left,
+          rgba(56, 189, 248, 0.08),
+          transparent 60%),
+        linear-gradient(135deg, #020617, #020617 60%, #020617);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: var(--shadow-soft);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      min-height: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 0.98rem;
+    }
+
+    .panel-header p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    .panel {
+      display: none;
+      gap: 0.8rem;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .panel.active {
+      display: grid;
+    }
+
+    /* Layout variants per panel */
+    .panel.two-column {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    }
+
+    .panel.single-column {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (max-width: 960px) {
+      .panel.two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      border-radius: var(--radius-xl);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 0.8rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      min-width: 0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .card-header span {
+      font-size: 0.7rem;
+      color: var(--text-soft);
+    }
+
+    .card-body {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    /* Upload panel */
+    .upload-drop {
+      border-radius: 1rem;
+      border: 1px dashed rgba(148, 163, 184, 0.7);
+      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.12), transparent 50%);
+      padding: 1rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .upload-drop strong {
+      color: #e5e7eb;
+      font-size: 0.86rem;
+    }
+
+    .upload-drop small {
+      color: var(--text-soft);
+      font-size: 0.72rem;
+    }
+
+    .file-list {
+      margin-top: 0.55rem;
+      border-radius: 0.8rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      padding: 0.4rem 0.55rem;
+      max-height: 175px;
+      overflow: auto;
+      font-size: 0.76rem;
+    }
+
+    .file-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.25rem 0.1rem;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .file-row:last-child {
+      border-bottom: none;
+    }
+
+    .file-name {
+      color: #e5e7eb;
+    }
+
+    .file-meta {
+      font-size: 0.72rem;
+      color: var(--text-soft);
+    }
+
+    /* Index panel */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(30, 64, 175, 0.7);
+      overflow: hidden;
+      margin-top: 0.45rem;
+      position: relative;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+      width: 68%;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+    }
+
+    .log {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 0.8rem;
+      padding: 0.5rem 0.6rem;
+      max-height: 180px;
+      overflow: auto;
+      font-size: 0.72rem;
+      border: 1px solid rgba(30, 64, 175, 0.9);
+    }
+
+    .log-line {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.18rem;
+      white-space: nowrap;
+    }
+
+    .log-time {
+      color: #64748b;
+    }
+
+    .log-msg {
+      color: #e5e7eb;
+    }
+
+    /* Chat & document builder */
+    .chat-window {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      border-radius: 1rem;
+      padding: 0.55rem 0.7rem;
+      background: radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 55%),
+        rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(59, 130, 246, 0.75);
+      max-height: 270px;
+      overflow: auto;
+    }
+
+    .chat-message {
+      max-width: 82%;
+      padding: 0.32rem 0.5rem;
+      border-radius: 0.8rem;
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .chat-message.user {
+      margin-left: auto;
+      background: rgba(56, 189, 248, 0.24);
+      border-bottom-right-radius: 0.1rem;
+    }
+
+    .chat-message.ai {
+      margin-right: auto;
+      background: rgba(15, 23, 42, 1);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      border-bottom-left-radius: 0.1rem;
+    }
+
+    .chat-meta {
+      font-size: 0.67rem;
+      color: var(--text-soft);
+      margin-top: 0.06rem;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 0.4rem 0.75rem;
+      font-size: 0.78rem;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      outline: none;
+    }
+
+    .chat-input::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .doc-preview {
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: linear-gradient(135deg, #020617, #020617 62%, #020617);
+      padding: 0.55rem 0.7rem;
+      max-height: 270px;
+      overflow: auto;
+      font-size: 0.78rem;
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .doc-title {
+      font-weight: 600;
+      font-size: 0.86rem;
+    }
+
+    .doc-tag {
+      font-size: 0.7rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.12);
+      color: #a7f3d0;
+      border: 1px solid rgba(22, 163, 74, 0.7);
+    }
+
+    .doc-section {
+      margin-bottom: 0.5rem;
+    }
+
+    .doc-section-title {
+      font-weight: 600;
+      color: #e5e7eb;
+      margin-bottom: 0.12rem;
+    }
+
+    .doc-section-body {
+      color: var(--text-soft);
+    }
+
+    .doc-section-body mark {
+      background: rgba(56, 189, 248, 0.19);
+      padding: 0.04rem 0.12rem;
+      border-radius: 0.25rem;
+      color: #e0f2fe;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.25rem;
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      padding: 0.12rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    /* Export footer */
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.45rem;
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .export-buttons {
+      display: flex;
+      gap: 0.4rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo"></div>
+      <div class="brand-title">
+        <span>Basin Scenario AI</span>
+        <span>Flood Risk Briefing Studio</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="badge">Pilot: ●● River System</div>
+      <span>LLM: GPT-4.1 · Azure OpenAI</span>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Scenario Flow</h2>
+        <p>From documents to finished briefing in eight guided steps.</p>
+      </div>
+      <ul class="step-list" id="stepList">
+        <li class="step-item active" data-step="1">
+          <div class="step-index">1</div>
+          <div>
+            <div class="step-title">Upload PDFs</div>
+            <div class="step-caption">Policies, plans, hazard maps</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="2">
+          <div class="step-index">2</div>
+          <div>
+            <div class="step-title">Index</div>
+            <div class="step-caption">Chunk, embed, & sync to RAG</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="3">
+          <div class="step-index">3</div>
+          <div>
+            <div class="step-title">Ask Questions</div>
+            <div class="step-caption">Explore the knowledge base</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="4">
+          <div class="step-index">4</div>
+          <div>
+            <div class="step-title">Build Scenario</div>
+            <div class="step-caption">Generate script + outline</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="5">
+          <div class="step-index">5</div>
+          <div>
+            <div class="step-title">Chat with AI</div>
+            <div class="step-caption">Refine explanations interactively</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="6">
+          <div class="step-index">6</div>
+          <div>
+            <div class="step-title">Edit</div>
+            <div class="step-caption">Manual tweaks & local context</div>
+          </div>
+        </li>
+        <li class="step-item" data-step="7">
+          <div class="step-index">7</div>
+          <div>
+            <div class="step-title">Export</div>
+            <div class="step-caption">PowerPoint · PDF · Script</div>
+          </div>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        This mock UI is for demos only – no real data is processed.
+        Use it to explain the end-to-end experience to river managers,
+        residents, and internal stakeholders.
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <section class="main">
+      <div class="main-header">
+        <div class="main-header-left">
+          <h1>Generate a flood briefing scenario</h1>
+          <p>Select your audience, upload river-basin documents, and let AI build a consistent explanation script.</p>
+          <div class="chip-row" style="margin-top:0.4rem;">
+            <span class="chip">Audience: Residents (Adults)</span>
+            <span class="chip">Duration: 15 min</span>
+            <span class="chip">Mode: In-person briefing</span>
+          </div>
+        </div>
+        <div class="main-header-right">
+          <button class="btn secondary" type="button">
+            <span>Preview as Child Session</span>
+          </button>
+          <button class="btn" type="button">
+            <span>New Scenario</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-container">
+        <div class="panel-header">
+          <h2 id="panelTitle">1 · Upload PDFs</h2>
+          <p id="panelSubtitle">Drop river policies, plans, and hazard maps. The app keeps track of versions per basin.</p>
+        </div>
+
+        <!-- Panel 1: Upload -->
+        <div class="panel two-column active" data-step-panel="1">
+          <div class="card">
+            <div class="card-header">
+              <h3>Source documents</h3>
+              <span>Accepted: PDF · Word · HTML</span>
+            </div>
+            <div class="card-body">
+              <div class="upload-drop">
+                <strong>Drop files here or click to browse</strong>
+                <small>Example: ●● River Basic Improvement Policy, Basin Flood Control Project 2.0, Flood Inundation Maps…</small>
+                <div style="margin-top:0.55rem;">
+                  <button class="btn secondary" type="button">
+                    <span>+ Select files</span>
+                  </button>
+                </div>
+              </div>
+              <div class="file-list">
+                <div class="file-row">
+                  <div>
+                    <div class="file-name">●●River_BasicImprovementPolicy_v3.pdf</div>
+                    <div class="file-meta">Updated: 2024-04-01 · 184 pages</div>
+                  </div>
+                  <div class="file-meta">Ready</div>
+                </div>
+                <div class="file-row">
+                  <div>
+                    <div class="file-name">●●River_BasinFloodProject2_0_main.pdf</div>
+                    <div class="file-meta">Updated: 2023-11-20 · 92 pages</div>
+                  </div>
+                  <div class="file-meta">Ready</div>
+                </div>
+                <div class="file-row">
+                  <div>
+                    <div class="file-name">●●River_MaximumAssumed_InundationMap.zip</div>
+                    <div class="file-meta">4 layers · GeoTIFF</div>
+                  </div>
+                  <div class="file-meta">Ready</div>
+                </div>
+                <div class="file-row">
+                  <div>
+                    <div class="file-name">SelfInvolvement_StudyGroup_Meeting5.pdf</div>
+                    <div class="file-meta">Slides · 56 pages</div>
+                  </div>
+                  <div class="file-meta">Ready</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Audience & scenario settings</h3>
+              <span>Tell the AI how this scenario will be used.</span>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;gap:0.5rem;font-size:0.78rem;">
+                <label>
+                  Audience type<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>Residents (Adults)</option>
+                    <option>Children (Elementary)</option>
+                    <option>Local Companies / Logistics</option>
+                    <option>University / Experts</option>
+                  </select>
+                </label>
+                <label>
+                  Scenario length<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>10–15 minutes</option>
+                    <option>5–10 minutes</option>
+                    <option>20–30 minutes</option>
+                  </select>
+                </label>
+                <label>
+                  Tone & style<br/>
+                  <select style="width:100%;margin-top:0.18rem;padding:0.3rem 0.5rem;border-radius:0.65rem;border:1px solid rgba(148,163,184,0.7);background:#020617;color:#e5e7eb;">
+                    <option>Warm & easy to understand</option>
+                    <option>Technical / data-driven</option>
+                    <option>Storytelling with examples</option>
+                  </select>
+                </label>
+              </div>
+              <div style="margin-top:0.5rem;display:flex;justify-content:flex-end;">
+                <button class="btn" type="button">
+                  <span>Next: Index documents</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Index -->
+        <div class="panel two-column" data-step-panel="2">
+          <div class="card">
+            <div class="card-header">
+              <h3>Indexing status</h3>
+              <span>Chunking, vectorizing, and syncing to Azure AI Search.</span>
+            </div>
+            <div class="card-body">
+              <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>Indexing in progress · 68% complete</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-bar-inner"></div>
+              </div>
+              <div style="margin-top:0.5rem;font-size:0.78rem;">
+                <strong>Current batch</strong>
+                <div style="margin-top:0.25rem;color:var(--text-soft);">
+                  Embedding updated paragraphs from <b>●●River_BasinFloodProject2_0_main.pdf</b><br/>
+                  Detecting outdated versions and retiring older policies automatically.
+                </div>
+              </div>
+              <div class="log" style="margin-top:0.6rem;">
+                <div class="log-line">
+                  <span class="log-time">12:03:11</span>
+                  <span class="log-msg">[AI Search] Created index <b>basin_●●_pdf_index</b></span>
+                </div>
+                <div class="log-line">
+                  <span class="log-time">12:03:18</span>
+                  <span class="log-msg">[ETL] 184 pages split into 1,236 semantic chunks</span>
+                </div>
+                <div class="log-line">
+                  <span class="log-time">12:03:25</span>
+                  <span class="log-msg">[Embedding] gpt-4.1-embed: 52,100 tokens processed</span>
+                </div>
+                <div class="log-line">
+                  <span class="log-time">12:03:32</span>
+                  <span class="log-msg">[Dedup] Retired policy version v2 (2015-06-01)</span>
+                </div>
+                <div class="log-line">
+                  <span class="log-time">12:03:44</span>
+                  <span class="log-msg">[RAG] Warmed cache for “maximum assumed rainfall” queries</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>What the user sees</h3>
+              <span>Simple, non-technical status view.</span>
+            </div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:1.1rem;font-size:0.78rem;color:var(--text-soft);">
+                <li>Green = ready to use in chat and scenario generation.</li>
+                <li>Yellow = indexing; you can still upload more files.</li>
+                <li>Red = invalid / outdated file; guidance is shown.</li>
+              </ul>
+              <div style="margin-top:0.7rem;">
+                <button class="btn" type="button">
+                  <span>Next: Ask questions</span>
+                </button>
+                <button class="btn secondary" type="button" style="margin-left:0.3rem;">
+                  <span>View index details</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Ask questions -->
+        <div class="panel two-column" data-step-panel="3">
+          <div class="card">
+            <div class="card-header">
+              <h3>Chat with documents</h3>
+              <span>Grounded Q&A over the indexed corpus.</span>
+            </div>
+            <div class="card-body">
+              <div class="chat-window">
+                <div class="chat-message user">
+                  For residents near ●● bridge, how deep could the water get in the “maximum assumed” flood?
+                  <div class="chat-meta">You · grounded Q&A</div>
+                </div>
+                <div class="chat-message ai">
+                  In the maximum assumed rainfall scenario, the inundation depth around ●● bridge is generally
+                  <b>1.0–2.0 m</b>, with some low-lying blocks reaching up to <b>3.0 m</b>.
+                  <br/><br/>
+                  This is based on the “●●River Maximum Assumed Inundation Map (R5 update)”
+                  and the basin flood project documents (pp. 42–46).
+                  <div class="chat-meta">AI · Sources: Policy v3 (2024), Inundation Map (R5)</div>
+                </div>
+                <div class="chat-message user">
+                  Summarize this as one sentence for a slide title.
+                  <div class="chat-meta">You</div>
+                </div>
+                <div class="chat-message ai">
+                  “Around ●● bridge, floodwater can reach up to about 2 meters – high enough to cover cars and flood the first floor.”
+                  <div class="chat-meta">AI · Style: simple, for residents</div>
+                </div>
+              </div>
+              <div class="chat-input-row">
+                <input class="chat-input" placeholder="Ask about past floods, current projects, or future risks…" />
+                <button class="btn secondary" type="button">
+                  <span>Send</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Suggested prompts</h3>
+              <span>Pre-built questions for non-expert users.</span>
+            </div>
+            <div class="card-body">
+              <div class="pill-row">
+                <span class="pill">Explain what “maximum assumed flood” means.</span>
+                <span class="pill">Show major floods in the last 50 years.</span>
+                <span class="pill">Compare current and planned levee height.</span>
+                <span class="pill">Why is whole-basin cooperation needed?</span>
+                <span class="pill">Rewrite for 5th-grade students.</span>
+              </div>
+              <div style="margin-top:0.9rem;">
+                <button class="btn" type="button">
+                  <span>Next: Build scenario</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 4: Build scenario -->
+        <div class="panel two-column" data-step-panel="4">
+          <div class="card">
+            <div class="card-header">
+              <h3>Scenario template</h3>
+              <span>Structured outline for the briefing.</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">Scenario: Residents · 15 min · ●● River</div>
+                  <span class="doc-tag">Draft v1 · AI generated</span>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">1. Opening (1 min)</div>
+                  <div class="doc-section-body">
+                    Warm greeting, today’s goal: “Understanding our flood risk as our own issue.”
+                  </div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">2. Past floods in this area (3 min)</div>
+                  <div class="doc-section-body">
+                    Brief recap of <mark>R元 heavy rain</mark> and damages near ●● bridge, using photos and simple numbers.
+                  </div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">3. What could happen now? (4 min)</div>
+                  <div class="doc-section-body">
+                    Explain the “maximum assumed flood” map: depths of <mark>1–2m</mark> around key neighborhoods,
+                    what that means for cars, first floors, and evacuation timing.
+                  </div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">4. What measures are being taken? (4 min)</div>
+                  <div class="doc-section-body">
+                    Summarize planned levee improvements, retarding basins, and upstream measures from the Basin
+                    Flood Project 2.0.
+                  </div>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">5. What can each household do? (3 min)</div>
+                  <div class="doc-section-body">
+                    Check hazard map depth for your home, prepare evacuation routes, talk with neighbors and family.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Generate script</h3>
+              <span>One click to produce full text per section.</span>
+            </div>
+            <div class="card-body">
+              <p style="font-size:0.8rem;color:var(--text-soft);margin-top:0;">
+                The AI agent fills each section with speaker notes, time allocation and slide hints,
+                using only the indexed documents + web search.
+              </p>
+              <div style="margin-top:0.6rem;">
+                <button class="btn" type="button">
+                  <span>Generate full script</span>
+                </button>
+                <button class="btn secondary" type="button" style="margin-left:0.3rem;">
+                  <span>Regenerate with different tone</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 5: Chat with AI -->
+        <div class="panel two-column" data-step-panel="5">
+          <div class="card">
+            <div class="card-header">
+              <h3>Scenario refinement chat</h3>
+              <span>Ask the AI to adjust content and wording.</span>
+            </div>
+            <div class="card-body">
+              <div class="chat-window">
+                <div class="chat-message user">
+                  Make section 3 easier to understand for elderly residents. Use fewer technical terms.
+                  <div class="chat-meta">You</div>
+                </div>
+                <div class="chat-message ai">
+                  I’ll simplify section 3 and avoid jargon like “return period” and “design flood”.
+                  Instead, I’ll talk about “very rare but possible heavy rain” and focus on depth and timing.
+                  <div class="chat-meta">AI · Scenario editor</div>
+                </div>
+                <div class="chat-message ai">
+                  <b>Updated section 3 (excerpt):</b><br/>
+                  “If the heaviest rain we can imagine falls on the ●● River area, the water around our homes may
+                  reach about 1–2 meters. That is high enough to cover cars and reach the windows of the first floor…”
+                  <div class="chat-meta">AI · Grounded in inundation map (R5)</div>
+                </div>
+              </div>
+              <div class="chat-input-row">
+                <input class="chat-input" placeholder="Ask AI to shorten, rephrase, or add local examples…" />
+                <button class="btn secondary" type="button">
+                  <span>Apply</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Change audience on the fly</h3>
+              <span>Reuse the same scenario for different groups.</span>
+            </div>
+            <div class="card-body">
+              <p style="font-size:0.8rem;color:var(--text-soft);margin-top:0;">
+                With one click, the same structure can be rewritten for children, companies, or experts
+                while keeping facts and figures consistent.
+              </p>
+              <div class="pill-row">
+                <span class="pill">Convert to elementary school lesson</span>
+                <span class="pill">Highlight business continuity for logistics</span>
+                <span class="pill">Add technical appendix for professors</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 6: Edit -->
+        <div class="panel two-column" data-step-panel="6">
+          <div class="card">
+            <div class="card-header">
+              <h3>Manual editing</h3>
+              <span>Final human tweaks before export.</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">Script editor</div>
+                  <span class="doc-tag">Human in the loop</span>
+                </div>
+                <div class="doc-section">
+                  <div class="doc-section-title">3. What could happen now? (edited)</div>
+                  <textarea style="width:100%;height:130px;background:#020617;color:#e5e7eb;border-radius:0.8rem;border:1px solid rgba(148,163,184,0.7);padding:0.4rem 0.5rem;font-size:0.78rem;resize:none;">
+If very heavy rain falls on the ●● River area, floodwater around this neighborhood could reach about 1–2 meters. 
+That is high enough to cover cars and to reach the windows of the first floor.
+
+In the low-lying blocks near ●● bridge, there is a risk of water as deep as 3 meters. 
+In that case, it may be dangerous to evacuate by car. It is safer to move early on foot or to a nearby higher building.</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Editing tools</h3>
+              <span>Small helpers for consistency.</span>
+            </div>
+            <div class="card-body">
+              <div class="pill-row">
+                <span class="pill">Check terminology (use “maximum assumed flood”)</span>
+                <span class="pill">Align numbers with latest policy version</span>
+                <span class="pill">Shorten to 12 minutes</span>
+                <span class="pill">Highlight key messages in bold</span>
+              </div>
+              <p style="margin-top:0.7rem;font-size:0.78rem;color:var(--text-soft);">
+                These actions call the AI again with strict grounding rules so facts stay aligned with
+                the latest documents, even after manual edits.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 7: Export -->
+        <div class="panel single-column" data-step-panel="7">
+          <div class="card">
+            <div class="card-header">
+              <h3>Export & share</h3>
+              <span>Generate the assets needed for the briefing.</span>
+            </div>
+            <div class="card-body">
+              <div class="doc-preview">
+                <div class="doc-header">
+                  <div class="doc-title">Export bundle</div>
+                  <span class="doc-tag">Ready to use</span>
+                </div>
+                <ul style="margin:0;padding-left:1.1rem;font-size:0.78rem;">
+                  <li><b>PowerPoint deck</b> – 12 slides with titles, bullets, and placeholders for flood maps.</li>
+                  <li><b>Speaker script (PDF)</b> – timed script with cues for AR/VR demos.</li>
+                  <li><b>One-page handout</b> – simple diagram and “3 things to do at home”.</li>
+                  <li><b>JSON scenario</b> – reusable structure that can be re-rendered for other audiences.</li>
+                </ul>
+                <div class="footer-bar">
+                  <div>Scenario ID: <code>●●-residents-2024-11-001</code></div>
+                  <div class="export-buttons">
+                    <button class="btn secondary" type="button">
+                      <span>Preview PPTX</span>
+                    </button>
+                    <button class="btn" type="button">
+                      <span>Export all</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p style="margin-top:0.8rem;font-size:0.78rem;color:var(--text-soft);">
+                In the real system, this step would call Azure Blob Storage, Office APIs, and the
+                document-generation backend to produce actual files.
+                For this mock, we only show what the user experience looks like.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const steps = document.querySelectorAll(".step-item");
+    const panels = document.querySelectorAll(".panel");
+    const panelTitle = document.getElementById("panelTitle");
+    const panelSubtitle = document.getElementById("panelSubtitle");
+
+    const titles = {
+      1: ["1 · Upload PDFs", "Drop official river documents. The system tracks versions per basin."],
+      2: ["2 · Index", "Chunk, embed, and push documents into the RAG index automatically."],
+      3: ["3 · Ask Questions", "Interactive Q&A grounded in policies, plans, and hazard maps."],
+      4: ["4 · Build Scenario", "Generate a structured story for the selected audience."],
+      5: ["5 · Chat with AI", "Refine the scenario via natural language instructions."],
+      6: ["6 · Edit", "Make final manual adjustments while keeping facts consistent."],
+      7: ["7 · Export", "Produce PowerPoint, scripts, and handouts for the briefing."]
+    };
+
+    steps.forEach(step => {
+      step.addEventListener("click", () => {
+        const stepId = step.getAttribute("data-step");
+
+        steps.forEach(s => s.classList.remove("active"));
+        step.classList.add("active");
+
+        panels.forEach(p => {
+          p.classList.toggle("active", p.getAttribute("data-step-panel") === stepId);
+        });
+
+        if (titles[stepId]) {
+          panelTitle.textContent = titles[stepId][0];
+          panelSubtitle.textContent = titles[stepId][1];
+        }
+      });
+    });
+  </script>
+</body>
+</html>
